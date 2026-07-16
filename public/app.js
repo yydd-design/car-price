@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // 加载数据
 async function loadData() {
   const body = document.getElementById('tableBody');
-  body.innerHTML = '<tr><td colspan="7" class="loading">⏳ 正在爬取最新价格数据...</td></tr>';
+  body.innerHTML = '<tr><td colspan="8" class="loading">⏳ 正在爬取最新价格数据...</td></tr>';
   
   try {
     const res = await fetch('/api/prices');
@@ -23,7 +23,7 @@ async function loadData() {
     
     render();
   } catch (e) {
-    body.innerHTML = `<tr><td colspan="7" class="loading">❌ 加载失败: ${e.message}</td></tr>`;
+    body.innerHTML = `<tr><td colspan="8" class="loading">❌ 加载失败: ${e.message}</td></tr>`;
   }
 }
 
@@ -55,12 +55,8 @@ async function refreshData() {
 // 切换燃料类型
 function switchType(type) {
   currentType = type;
-  
-  // 更新标签状态
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  const typeMap = { all: 'all', gas: 'gas', ev: 'ev', hybrid: 'hybrid' };
   document.querySelector(`.tab[data-type="${type}"]`).classList.add('active');
-  
   render();
 }
 
@@ -75,7 +71,6 @@ function getCars() {
   if (!allData) return [];
   
   let cars = [];
-  
   if (currentType === 'all') {
     cars = [...(allData['燃油'] || []), ...(allData['纯电'] || []), ...(allData['混动'] || [])];
   } else if (currentType === 'gas') {
@@ -86,7 +81,6 @@ function getCars() {
     cars = allData['混动'] || [];
   }
   
-  // 搜索过滤
   if (currentFilter) {
     cars = cars.filter(c => 
       c.name.toLowerCase().includes(currentFilter) ||
@@ -97,19 +91,18 @@ function getCars() {
   return cars;
 }
 
-// 渲染
+// ====== 列表渲染 ======
 function render() {
   const cars = getCars();
   const body = document.getElementById('tableBody');
   const summary = document.getElementById('summary');
   
   if (cars.length === 0) {
-    body.innerHTML = '<tr><td colspan="7" class="no-result">没有找到匹配的车型</td></tr>';
+    body.innerHTML = '<tr><td colspan="8" class="no-result">没有找到匹配的车型</td></tr>';
     summary.innerHTML = `<div class="stat">共 0 辆车</div>`;
     return;
   }
   
-  // 统计
   const upCount = cars.filter(c => c.trend === 'up').length;
   const downCount = cars.filter(c => c.trend === 'down').length;
   const stableCount = cars.filter(c => c.trend === 'stable').length;
@@ -123,10 +116,11 @@ function render() {
     <div class="stat" style="color:#1890ff">● 首次 ${firstCount}</div>
   `;
   
-  // 渲染表格
   body.innerHTML = cars.map((car, i) => {
-    return `<tr>
+    const carData = encodeURIComponent(JSON.stringify(car));
+    return `<tr class="clickable-row" onclick="showDetail('${carData}')">
       <td class="col-rank">${car.rank}</td>
+      <td class="col-img">${car.image ? `<img src="${car.image}" alt="${car.name}" loading="lazy" onerror="this.outerHTML='<div class=car-img-placeholder>🚗</div>'">` : '<div class="car-img-placeholder">🚗</div>'}</td>
       <td class="col-name"><strong>${car.name}</strong></td>
       <td class="col-brand">${car.brand}</td>
       <td class="col-type">${getTypeBadge(car.fuelType)}</td>
@@ -145,6 +139,68 @@ function render() {
   }).join('');
 }
 
+// ====== 详情页 ======
+function showDetail(encodedCar) {
+  const car = JSON.parse(decodeURIComponent(encodedCar));
+  
+  // 切换视图
+  document.getElementById('listView').style.display = 'none';
+  document.getElementById('detailView').style.display = 'block';
+  
+  // 填充信息
+  document.getElementById('detailTitle').textContent = car.name;
+  document.getElementById('detailImage').src = car.image || '';
+  document.getElementById('detailImage').alt = car.name;
+  document.getElementById('detailName').textContent = car.name;
+  document.getElementById('detailBrand').textContent = car.brand;
+  document.getElementById('detailType').innerHTML = getTypeBadge(car.fuelType);
+  document.getElementById('detailRank').textContent = `#${car.rank}`;
+  
+  // 价格
+  document.getElementById('detailPrice').textContent = formatPrice(car.dealerPriceMin);
+  const rangeEl = document.getElementById('detailRange');
+  if (car.dealerPriceMax > car.dealerPriceMin) {
+    rangeEl.textContent = `~ ${formatPrice(car.dealerPriceMax)}万`;
+  } else {
+    rangeEl.textContent = '';
+  }
+  document.getElementById('detailGuidePrice').textContent = `${car.guidePriceMin}~${car.guidePriceMax}万`;
+  
+  // 涨跌
+  const trendEl = document.getElementById('detailTrend');
+  trendEl.className = 'price-trend ' + getTrendClass(car.trend);
+  if (car.trend === 'up') {
+    trendEl.innerHTML = `📈 涨价 ${car.priceChange}万 (+${car.priceChangePercent}%)`;
+  } else if (car.trend === 'down') {
+    trendEl.innerHTML = `📉 降价 ${Math.abs(car.priceChange)}万 (${car.priceChangePercent}%)`;
+  } else if (car.trend === 'stable') {
+    trendEl.textContent = '➖ 价格稳定';
+  } else {
+    trendEl.textContent = '● 首次记录（暂无历史对比）';
+  }
+  
+  // 配置表
+  document.getElementById('cfgBrand').textContent = car.brand;
+  document.getElementById('cfgName').textContent = car.name;
+  document.getElementById('cfgFuel').textContent = car.fuelType;
+  document.getElementById('cfgPrice').textContent = `${car.dealerPriceMin}~${car.dealerPriceMax}万`;
+  document.getElementById('cfgPopularity').textContent = car.popularity ? `${(car.popularity / 10000).toFixed(1)}万关注` : '-';
+  
+  // 懂车帝链接
+  document.getElementById('detailDCDLink').href = `https://www.dongchedi.com/series/${car.id}`;
+  
+  // 滚到顶部
+  window.scrollTo(0, 0);
+}
+
+// 返回列表
+function backToList() {
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('listView').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+// ====== 工具函数 ======
 function getTypeBadge(type) {
   const map = { '燃油': 'type-gas', '纯电': 'type-ev', '混动': 'type-hybrid' };
   return `<span class="type-badge ${map[type] || ''}">${type}</span>`;
@@ -152,7 +208,7 @@ function getTypeBadge(type) {
 
 function formatPrice(price) {
   if (!price || price <= 0) return '暂无报价';
-  return price.toFixed(2);
+  return price.toFixed(2) + '万';
 }
 
 function getTrendClass(trend) {

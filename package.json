@@ -7,12 +7,19 @@
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["汽车", "价格", "查询", "涨跌"],
+  "keywords": [
+    "汽车",
+    "价格",
+    "查询",
+    "涨跌"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "axios": "^1.18.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "jsdom": "^29.1.1",
+    "playwright-core": "^1.61.1"
   }
 }

@@ -104,8 +104,8 @@ function saveHistory(data) {
 async function scrapeAndCompare() {
   console.log(`[${new Date().toLocaleString()}] 开始爬取...`);
   
-  // 爬取200辆车，确保能凑够燃油35 + 纯电35
-  const cars = await fetchTopCars(200);
+  // 爬取1800辆车，确保能凑够燃油200 + 纯电200 + 混动100
+  const cars = await fetchTopCars(1800);
   const history = loadHistory();
   const now = new Date().toISOString();
   
@@ -164,9 +164,9 @@ async function scrapeAndCompare() {
   const result = {
     updatedAt: now,
     total: cars.length,
-    燃油: grouped['燃油'].slice(0, 35),
-    纯电: grouped['纯电'].slice(0, 35),
-    混动: grouped['混动'].slice(0, 20),
+    燃油: grouped['燃油'].slice(0, 200),
+    纯电: grouped['纯电'].slice(0, 200),
+    混动: grouped['混动'].slice(0, 100),
   };
   
   console.log(`完成！共 ${cars.length} 辆车 | 燃油:${grouped['燃油'].length} 纯电:${grouped['纯电'].length} 混动:${grouped['混动'].length}`);

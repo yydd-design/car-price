@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
+  <!-- ====== 列表页 ====== -->
+  <div id="listView" class="container">
     <header>
       <h1>🚗 汽车价格查询系统</h1>
       <div class="header-info">
@@ -37,6 +38,7 @@
         <thead>
           <tr>
             <th class="col-rank">#</th>
+            <th class="col-img">图片</th>
             <th class="col-name">车型</th>
             <th class="col-brand">品牌</th>
             <th class="col-type">类型</th>
@@ -46,7 +48,7 @@
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="7" class="loading">正在加载数据...</td></tr>
+          <tr><td colspan="8" class="loading">正在加载数据...</td></tr>
         </tbody>
       </table>
     </div>
@@ -56,6 +58,60 @@
       <span class="legend-item"><span class="dot red"></span> 涨价了</span>
       <span class="legend-item"><span class="dot gray"></span> 价格稳定</span>
       <span class="legend-item"><span class="dot blue"></span> 首次记录</span>
+    </div>
+  </div>
+
+  <!-- ====== 详情页 ====== -->
+  <div id="detailView" class="container detail-container" style="display:none">
+    <header class="detail-header">
+      <button class="back-btn" onclick="backToList()">← 返回列表</button>
+      <span id="detailTitle">详情</span>
+    </header>
+
+    <div class="detail-content">
+      <div class="detail-image-section">
+        <img id="detailImage" src="" alt="" class="detail-main-img">
+      </div>
+
+      <div class="detail-info-section">
+        <h2 id="detailName"></h2>
+        <div class="detail-meta">
+          <span id="detailBrand" class="meta-tag"></span>
+          <span id="detailType" class="meta-tag"></span>
+          <span id="detailRank" class="meta-tag"></span>
+        </div>
+
+        <div class="detail-price-box">
+          <div class="price-row">
+            <span class="price-label">当前售价</span>
+            <span id="detailPrice" class="price-value"></span>
+            <span id="detailRange" class="price-range"></span>
+          </div>
+          <div class="price-row">
+            <span class="price-label">官方指导价</span>
+            <span id="detailGuidePrice" class="price-guide"></span>
+          </div>
+          <div class="price-row">
+            <span class="price-label">价格走势</span>
+            <span id="detailTrend" class="price-trend"></span>
+          </div>
+        </div>
+
+        <div class="detail-config-box">
+          <h3>📋 基本参数</h3>
+          <table class="config-table">
+            <tr><td class="cfg-label">品牌</td><td id="cfgBrand"></td></tr>
+            <tr><td class="cfg-label">车型</td><td id="cfgName"></td></tr>
+            <tr><td class="cfg-label">能源类型</td><td id="cfgFuel"></td></tr>
+            <tr><td class="cfg-label">价格区间</td><td id="cfgPrice"></td></tr>
+            <tr><td class="cfg-label">关注热度</td><td id="cfgPopularity"></td></tr>
+          </table>
+        </div>
+
+        <a id="detailDCDLink" href="#" target="_blank" class="dcd-link-btn">
+          🔍 在懂车帝查看完整配置与图片 ›
+        </a>
+      </div>
     </div>
   </div>
 

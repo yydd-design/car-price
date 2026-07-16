@@ -1,0 +1,6 @@
+node_modules/
+data/prices.json
+tmp/
+.DS_Store
+*.log
+test-*.js

@@ -1,0 +1,18 @@
+{
+  "name": "car-price-system",
+  "version": "1.0.0",
+  "description": "汽车价格查询系统 - 实时追踪燃油/纯电/混动车价格涨跌",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["汽车", "价格", "查询", "涨跌"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.18.1",
+    "express": "^5.2.1"
+  }
+}

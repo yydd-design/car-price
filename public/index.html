@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚗 汽车价格查询系统</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚗 汽车价格查询系统</h1>
+      <div class="header-info">
+        <span id="updateTime">加载中...</span>
+        <button id="refreshBtn" onclick="refreshData()">🔄 手动刷新</button>
+      </div>
+    </header>
+
+    <div class="controls">
+      <div class="type-tabs">
+        <button class="tab active" data-type="all" onclick="switchType('all')">🏠 全部</button>
+        <button class="tab" data-type="gas" onclick="switchType('gas')">⛽ 燃油车</button>
+        <button class="tab" data-type="ev" onclick="switchType('ev')">⚡ 纯电车</button>
+        <button class="tab" data-type="hybrid" onclick="switchType('hybrid')">🔋 混动车</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 搜索车型或品牌..." oninput="filterCars()">
+      </div>
+    </div>
+
+    <div class="summary" id="summary">
+      <div class="stat">加载中...</div>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="priceTable">
+        <thead>
+          <tr>
+            <th class="col-rank">#</th>
+            <th class="col-name">车型</th>
+            <th class="col-brand">品牌</th>
+            <th class="col-type">类型</th>
+            <th class="col-price">当前价格 (万)</th>
+            <th class="col-change">涨跌</th>
+            <th class="col-pct">涨跌幅</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="7" class="loading">正在加载数据...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="dot green"></span> 降价了</span>
+      <span class="legend-item"><span class="dot red"></span> 涨价了</span>
+      <span class="legend-item"><span class="dot gray"></span> 价格稳定</span>
+      <span class="legend-item"><span class="dot blue"></span> 首次记录</span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

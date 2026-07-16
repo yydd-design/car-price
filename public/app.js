@@ -18,6 +18,15 @@ async function loadData() {
     
     if (!json.success) throw new Error(json.error);
     
+    // 处理加载中状态
+    if (json.loading) {
+      body.innerHTML = `<tr><td colspan="8" class="loading">⏳ 服务器正在爬取数据（约1-2分钟），请稍后刷新...</td></tr>`;
+      document.getElementById('updateTime').textContent = '⏳ 数据爬取中...';
+      // 10秒后自动重试
+      setTimeout(loadData, 10000);
+      return;
+    }
+    
     allData = json.data;
     document.getElementById('updateTime').textContent = `📅 更新于 ${formatTime(allData.updatedAt)}`;
     
